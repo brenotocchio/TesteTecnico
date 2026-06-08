@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Softline — Produtos</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <header>
+    <h1>Softline</h1>
+    <nav>
+      <a class="btn btn-cinza" href="dashboard.html">Início</a>
+      <a class="btn btn-cinza" href="produtos.html">Produtos</a>
+      <a class="btn btn-cinza" href="clientes.html">Clientes</a>
+      <button class="btn btn-outline" onclick="sair()">Sair</button>
+    </nav>
+  </header>
+
+  <main>
+    <div class="pagina-topo">
+      <h2>Lista de Produtos</h2>
+      <a class="btn btn-vermelho" href="produto-form.html">+ Novo Produto</a>
+    </div>
+
+    <div class="tabela-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>Descrição</th>
+            <th>Cód. Barras</th>
+            <th>Valor Venda</th>
+            <th>Peso Bruto</th>
+            <th>Peso Líq.</th>
+            <th style="text-align:right">Ações</th>
+          </tr>
+        </thead>
+        <tbody id="tbody-produtos">
+          <tr>
+            <td colspan="7">
+              <div class="vazio">Carregando...</div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <!-- Modal de Visualização -->
+  <div class="modal-fundo" id="modal-ver">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Detalhes do Produto</h2>
+        <button class="modal-fechar" onclick="fecharModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="view-grid">
+          <div class="campo-view">
+            <span>Código</span>
+            <p id="vp-codigo"></p>
+          </div>
+          <div class="campo-view">
+            <span>Código de Barras</span>
+            <p id="vp-codbarras"></p>
+          </div>
+          <div class="campo-view full">
+            <span>Descrição</span>
+            <p id="vp-descricao"></p>
+          </div>
+          <div class="campo-view">
+            <span>Valor de Venda</span>
+            <p id="vp-valor" style="font-size:18px; font-weight:bold; color:#CC1B1B;"></p>
+          </div>
+          <div class="campo-view">
+            <span>Peso Bruto</span>
+            <p id="vp-bruto"></p>
+          </div>
+          <div class="campo-view">
+            <span>Peso Líquido</span>
+            <p id="vp-liquido"></p>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-cinza" onclick="fecharModal()">Fechar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast"></div>
+
+  <script src="auth.js"></script>
+  <script>
+    verificarLogin();
+
+    // Carrega e exibe a lista de produtos
+    async function carregarProdutos() {
+      const tbody = document.getElementById('tbody-produtos');
+      try {
+        const lista = await api('GET', '/produtos');
+
+        if (!lista.length) {
+          tbody.innerHTML = '<tr><td colspan="7"><div class="vazio">Nenhum produto cadastrado.</div></td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = lista.map(p => `
+          <tr>
+            <td>${p.codigo}</td>
+            <td>${p.descricao}</td>
+            <td>${p.codigoBarras || '—'}</td>
+            <td>R$ ${Number(p.valorVenda).toFixed(2).replace('.', ',')}</td>
+            <td>${Number(p.pesoBruto).toFixed(3)}</td>
+            <td>${Number(p.pesoLiquido).toFixed(3)}</td>
+            <td>
+              <div class="acoes">
+                <button class="btn-acao btn-ver"    onclick="verProduto(${p.id})">Ver</button>
+                <a      class="btn-acao btn-editar" href="produto-form.html?id=${p.id}">Editar</a>
+                <button class="btn-acao btn-excluir" onclick="excluirProduto(${p.id})">Excluir</button>
+              </div>
+            </td>
+          </tr>
+        `).join('');
+
+      } catch {
+        tbody.innerHTML = '<tr><td colspan="7"><div class="vazio">Erro ao carregar produtos.</div></td></tr>';
+      }
+    }
+
+    // Abre o modal de visualização
+    async function verProduto(id) {
+      const p = await api('GET', '/produtos/' + id);
+      document.getElementById('vp-codigo').textContent    = p.codigo;
+      document.getElementById('vp-descricao').textContent = p.descricao;
+      document.getElementById('vp-codbarras').textContent = p.codigoBarras || '—';
+      document.getElementById('vp-valor').textContent     = 'R$ ' + Number(p.valorVenda).toFixed(2).replace('.', ',');
+      document.getElementById('vp-bruto').textContent     = Number(p.pesoBruto).toFixed(3) + ' kg';
+      document.getElementById('vp-liquido').textContent   = Number(p.pesoLiquido).toFixed(3) + ' kg';
+      document.getElementById('modal-ver').classList.add('aberto');
+    }
+
+    function fecharModal() {
+      document.getElementById('modal-ver').classList.remove('aberto');
+    }
+
+    // Exclui um produto
+    async function excluirProduto(id) {
+      if (!confirm('Deseja excluir este produto?')) return;
+      await api('DELETE', '/produtos/' + id);
+      toast('Produto excluído!');
+      carregarProdutos();
+    }
+
+    // Fechar modal clicando fora
+    document.getElementById('modal-ver').addEventListener('click', function(e) {
+      if (e.target === this) fecharModal();
+    });
+
+    carregarProdutos();
+  </script>
+
+</body>
+</html>

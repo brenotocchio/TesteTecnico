@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Softline — Dashboard</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <header>
+    <h1>Softline</h1>
+    <nav>
+      <a class="btn btn-cinza" href="dashboard.html">Início</a>
+      <a class="btn btn-cinza" href="produtos.html">Produtos</a>
+      <a class="btn btn-cinza" href="clientes.html">Clientes</a>
+      <button class="btn btn-outline" onclick="sair()">Sair</button>
+    </nav>
+  </header>
+
+  <main>
+    <h2>Bem-vindo ao sistema!</h2>
+
+    <div class="dash-cards">
+      <a class="dash-card" href="produtos.html">
+        <h2>Total de Produtos</h2>
+        <p id="total-produtos">—</p>
+      </a>
+      <a class="dash-card" href="clientes.html">
+        <h2>Total de Clientes</h2>
+        <p id="total-clientes">—</p>
+      </a>
+    </div>
+  </main>
+
+  <script src="auth.js"></script>
+  <script>
+    // Verifica se está logado ao carregar a página
+    verificarLogin();
+
+    // Carrega os totais do dashboard
+    async function carregarDashboard() {
+      try {
+        const produtos  = await api('GET', '/produtos');
+        const clientes  = await api('GET', '/clientes');
+        document.getElementById('total-produtos').textContent = produtos.length;
+        document.getElementById('total-clientes').textContent = clientes.length;
+      } catch {
+        document.getElementById('total-produtos').textContent = 'Erro';
+        document.getElementById('total-clientes').textContent = 'Erro';
+      }
+    }
+
+    carregarDashboard();
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Softline — Cadastro de Produto</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <header>
+    <h1>Softline</h1>
+    <nav>
+      <a class="btn btn-cinza" href="dashboard.html">Início</a>
+      <a class="btn btn-cinza" href="produtos.html">Produtos</a>
+      <a class="btn btn-cinza" href="clientes.html">Clientes</a>
+      <button class="btn btn-outline" onclick="sair()">Sair</button>
+    </nav>
+  </header>
+
+  <main>
+    <div class="pagina-topo">
+      <h2 id="titulo-pagina">Novo Produto</h2>
+    </div>
+
+    <div class="form-box">
+      <input type="hidden" id="produto-id">
+
+      <div class="form-grid">
+
+        <div class="form-group">
+          <label for="p-codigo">Código *</label>
+          <input type="number" id="p-codigo" placeholder="Ex: 1001" min="1">
+        </div>
+
+        <div class="form-group full">
+          <label for="p-descricao">Descrição * (máx. 60 caracteres)</label>
+          <input type="text" id="p-descricao" maxlength="60" placeholder="Descrição do produto">
+        </div>
+
+        <div class="form-group full">
+          <label for="p-codbarras">Código de Barras (máx. 14 caracteres)</label>
+          <input type="text" id="p-codbarras" maxlength="14" placeholder="00000000000000">
+        </div>
+
+        <div class="form-group">
+          <label for="p-valorvenda">Valor de Venda (R$) *</label>
+          <input type="text" id="p-valorvenda" placeholder="0,00" maxlength="15">
+        </div>
+
+        <div class="form-group">
+          <label for="p-pesobruto">Peso Bruto (kg) *</label>
+          <input type="text" id="p-pesobruto" placeholder="0,000" maxlength="15">
+        </div>
+
+        <div class="form-group">
+          <label for="p-pesoliquido">Peso Líquido (kg) *</label>
+          <input type="text" id="p-pesoliquido" placeholder="0,000" maxlength="15">
+        </div>
+
+      </div>
+
+      <div class="form-acoes">
+        <button class="btn btn-vermelho" onclick="salvarProduto()">Salvar</button>
+        <a class="btn btn-cinza" href="produtos.html">Cancelar</a>
+      </div>
+    </div>
+  </main>
+
+  <script src="auth.js"></script>
+  <script>
+    verificarLogin();
+
+    // Aplica as máscaras nos campos numéricos
+    mascaraDecimal(document.getElementById('p-valorvenda'),  2);
+    mascaraDecimal(document.getElementById('p-pesobruto'),   3);
+    mascaraDecimal(document.getElementById('p-pesoliquido'), 3);
+
+    // Verifica se é edição (?id=X)
+    const params = new URLSearchParams(window.location.search);
+    const idEdicao = params.get('id');
+
+    if (idEdicao) {
+      // Modo edição: carrega os dados do produto
+      document.getElementById('titulo-pagina').textContent = 'Editar Produto';
+
+      api('GET', '/produtos/' + idEdicao).then(p => {
+        document.getElementById('produto-id').value       = p.id;
+        document.getElementById('p-codigo').value          = p.codigo;
+        document.getElementById('p-descricao').value       = p.descricao;
+        document.getElementById('p-codbarras').value       = p.codigoBarras || '';
+        document.getElementById('p-valorvenda').value      = Number(p.valorVenda).toFixed(2).replace('.', ',');
+        document.getElementById('p-pesobruto').value       = Number(p.pesoBruto).toFixed(3).replace('.', ',');
+        document.getElementById('p-pesoliquido').value     = Number(p.pesoLiquido).toFixed(3).replace('.', ',');
+      });
+    }
+
+    // Salva o produto (cria ou edita)
+    async function salvarProduto() {
+      const id        = document.getElementById('produto-id').value;
+      const codigo    = parseInt(document.getElementById('p-codigo').value);
+      const descricao = document.getElementById('p-descricao').value.trim();
+      const codbarras = document.getElementById('p-codbarras').value.trim();
+      const valor     = parseFloat(document.getElementById('p-valorvenda').value.replace(',', '.'));
+      const bruto     = parseFloat(document.getElementById('p-pesobruto').value.replace(',', '.'));
+      const liquido   = parseFloat(document.getElementById('p-pesoliquido').value.replace(',', '.'));
+
+      if (!codigo || !descricao || isNaN(valor) || isNaN(bruto) || isNaN(liquido)) {
+        alert('Preencha todos os campos obrigatórios!');
+        return;
+      }
+
+      const body = {
+        codigo,
+        descricao,
+        codigoBarras: codbarras || null,
+        valorVenda:   valor,
+        pesoBruto:    bruto,
+        pesoLiquido:  liquido
+      };
+
+      if (id) {
+        await api('PUT', '/produtos/' + id, body);
+      } else {
+        await api('POST', '/produtos', body);
+      }
+
+      // Após salvar, redireciona para a lista de produtos
+      window.location.href = 'produtos.html';
+    }
+  </script>
+
+</body>
+</html>

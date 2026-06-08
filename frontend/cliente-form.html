@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Softline — Cadastro de Cliente</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <header>
+    <h1>Softline</h1>
+    <nav>
+      <a class="btn btn-cinza" href="dashboard.html">Início</a>
+      <a class="btn btn-cinza" href="produtos.html">Produtos</a>
+      <a class="btn btn-cinza" href="clientes.html">Clientes</a>
+      <button class="btn btn-outline" onclick="sair()">Sair</button>
+    </nav>
+  </header>
+
+  <main>
+    <div class="pagina-topo">
+      <h2 id="titulo-pagina">Novo Cliente</h2>
+    </div>
+
+    <div class="form-box">
+      <input type="hidden" id="cliente-id">
+
+      <div class="form-grid">
+
+        <div class="form-group">
+          <label for="c-codigo">Código *</label>
+          <input type="number" id="c-codigo" placeholder="Ex: 101" min="1">
+        </div>
+
+        <div class="form-group full">
+          <label for="c-nome">Nome * (máx. 60 caracteres)</label>
+          <input type="text" id="c-nome" maxlength="60" placeholder="Nome completo ou razão social">
+        </div>
+
+        <div class="form-group full">
+          <label for="c-fantasia">Nome Fantasia (máx. 100 caracteres)</label>
+          <input type="text" id="c-fantasia" maxlength="100" placeholder="Nome fantasia">
+        </div>
+
+        <div class="form-group full">
+          <label for="c-documento">Documento (CPF ou CNPJ) *</label>
+          <input type="text" id="c-documento" maxlength="18" placeholder="000.000.000-00 ou 00.000.000/0000-00">
+        </div>
+
+        <div class="form-group full">
+          <label for="c-endereco">Endereço</label>
+          <input type="text" id="c-endereco" placeholder="Rua, número, bairro, cidade/UF">
+        </div>
+
+      </div>
+
+      <div class="form-acoes">
+        <button class="btn btn-vermelho" onclick="salvarCliente()">Salvar</button>
+        <a class="btn btn-cinza" href="clientes.html">Cancelar</a>
+      </div>
+    </div>
+  </main>
+
+  <script src="auth.js"></script>
+  <script>
+    verificarLogin();
+
+    // Máscara no campo de documento
+    mascaraDocumento(document.getElementById('c-documento'));
+
+    // Verifica se é edição (?id=X)
+    const params = new URLSearchParams(window.location.search);
+    const idEdicao = params.get('id');
+
+    if (idEdicao) {
+      // Modo edição: carrega os dados do cliente
+      document.getElementById('titulo-pagina').textContent = 'Editar Cliente';
+
+      api('GET', '/clientes/' + idEdicao).then(c => {
+        document.getElementById('cliente-id').value    = c.id;
+        document.getElementById('c-codigo').value       = c.codigo;
+        document.getElementById('c-nome').value         = c.nome;
+        document.getElementById('c-fantasia').value     = c.fantasia || '';
+        document.getElementById('c-documento').value    = c.documento;
+        document.getElementById('c-endereco').value     = c.endereco || '';
+      });
+    }
+
+    // Salva o cliente (cria ou edita)
+    async function salvarCliente() {
+      const id        = document.getElementById('cliente-id').value;
+      const codigo    = parseInt(document.getElementById('c-codigo').value);
+      const nome      = document.getElementById('c-nome').value.trim();
+      const fantasia  = document.getElementById('c-fantasia').value.trim();
+      const documento = document.getElementById('c-documento').value.trim();
+      const endereco  = document.getElementById('c-endereco').value.trim();
+
+      if (!codigo || !nome || !documento) {
+        alert('Preencha todos os campos obrigatórios!');
+        return;
+      }
+
+      const body = {
+        codigo,
+        nome,
+        fantasia:  fantasia  || null,
+        documento,
+        endereco:  endereco  || null
+      };
+
+      if (id) {
+        await api('PUT', '/clientes/' + id, body);
+      } else {
+        await api('POST', '/clientes', body);
+      }
+
+      // Após salvar, redireciona para a lista de clientes
+      window.location.href = 'clientes.html';
+    }
+  </script>
+
+</body>
+</html>

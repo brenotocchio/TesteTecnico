@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Softline — Login</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="login-page">
+
+  <div class="login-box">
+    <h1>Softline</h1>
+    <p>Faça login para continuar</p>
+
+    <div class="form-group">
+      <label for="login-usuario">Usuário</label>
+      <input type="text" id="login-usuario" placeholder="Digite seu usuário">
+    </div>
+
+    <div class="form-group">
+      <label for="login-senha">Senha</label>
+      <input type="password" id="login-senha" placeholder="Digite sua senha">
+    </div>
+
+    <p class="erro" id="erro-login">Usuário ou senha inválidos.</p>
+
+    <button class="btn btn-vermelho btn-full" style="margin-top:16px" onclick="fazerLogin()">
+      Confirmar
+    </button>
+  </div>
+
+  <script>
+    const API = 'http://localhost:5000/api';
+
+    // Permite pressionar Enter para logar
+    document.getElementById('login-senha').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') fazerLogin();
+    });
+
+    async function fazerLogin() {
+      const usuario = document.getElementById('login-usuario').value.trim();
+      const senha   = document.getElementById('login-senha').value.trim();
+      const erro    = document.getElementById('erro-login');
+
+      erro.classList.remove('visivel');
+
+      // Validações básicas
+      if (!usuario || !senha) {
+        erro.textContent = 'Preencha usuário e senha.';
+        erro.classList.add('visivel');
+        return;
+      }
+
+      try {
+          const resposta = await fetch(API + '/login', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ usuario, senha })
+          });
+
+          if (resposta.ok) {
+              const dados = await resposta.json();
+              if (dados.sucesso) {
+                  sessionStorage.setItem('logado', 'true');
+                  window.location.href = 'dashboard.html';
+              } else {
+                  erro.textContent = 'Usuário ou senha inválidos.';
+                  erro.classList.add('visivel');
+              }
+          } else {
+              erro.textContent = 'Usuário ou senha inválidos.';
+              erro.classList.add('visivel');
+          }
+      } catch {
+          erro.textContent = 'Erro ao conectar com a API. Verifique se ela está rodando.';
+          erro.classList.add('visivel');
+      }
+    }
+  </script>
+
+</body>
+</html>

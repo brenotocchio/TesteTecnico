@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Softline — Clientes</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <header>
+    <h1>Softline</h1>
+    <nav>
+      <a class="btn btn-cinza" href="dashboard.html">Início</a>
+      <a class="btn btn-cinza" href="produtos.html">Produtos</a>
+      <a class="btn btn-cinza" href="clientes.html">Clientes</a>
+      <button class="btn btn-outline" onclick="sair()">Sair</button>
+    </nav>
+  </header>
+
+  <main>
+    <div class="pagina-topo">
+      <h2>Lista de Clientes</h2>
+      <a class="btn btn-vermelho" href="cliente-form.html">+ Novo Cliente</a>
+    </div>
+
+    <div class="tabela-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>Nome</th>
+            <th>Fantasia</th>
+            <th>Documento</th>
+            <th>Endereço</th>
+            <th style="text-align:right">Ações</th>
+          </tr>
+        </thead>
+        <tbody id="tbody-clientes">
+          <tr>
+            <td colspan="6">
+              <div class="vazio">Carregando...</div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <!-- Modal de Visualização -->
+  <div class="modal-fundo" id="modal-ver">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Detalhes do Cliente</h2>
+        <button class="modal-fechar" onclick="fecharModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="view-grid">
+          <div class="campo-view">
+            <span>Código</span>
+            <p id="vc-codigo"></p>
+          </div>
+          <div class="campo-view">
+            <span>Documento</span>
+            <p id="vc-documento"></p>
+          </div>
+          <div class="campo-view full">
+            <span>Nome</span>
+            <p id="vc-nome" style="font-size:17px; font-weight:bold;"></p>
+          </div>
+          <div class="campo-view full">
+            <span>Nome Fantasia</span>
+            <p id="vc-fantasia"></p>
+          </div>
+          <div class="campo-view full">
+            <span>Endereço</span>
+            <p id="vc-endereco"></p>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-cinza" onclick="fecharModal()">Fechar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast"></div>
+
+  <script src="auth.js"></script>
+  <script>
+    verificarLogin();
+
+    // Carrega e exibe a lista de clientes
+    async function carregarClientes() {
+      const tbody = document.getElementById('tbody-clientes');
+      try {
+        const lista = await api('GET', '/clientes');
+
+        if (!lista.length) {
+          tbody.innerHTML = '<tr><td colspan="6"><div class="vazio">Nenhum cliente cadastrado.</div></td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = lista.map(c => `
+          <tr>
+            <td>${c.codigo}</td>
+            <td>${c.nome}</td>
+            <td>${c.fantasia || '—'}</td>
+            <td>${c.documento}</td>
+            <td>${c.endereco || '—'}</td>
+            <td>
+              <div class="acoes">
+                <button class="btn-acao btn-ver"     onclick="verCliente(${c.id})">Ver</button>
+                <a      class="btn-acao btn-editar"  href="cliente-form.html?id=${c.id}">Editar</a>
+                <button class="btn-acao btn-excluir" onclick="excluirCliente(${c.id})">Excluir</button>
+              </div>
+            </td>
+          </tr>
+        `).join('');
+
+      } catch {
+        tbody.innerHTML = '<tr><td colspan="6"><div class="vazio">Erro ao carregar clientes.</div></td></tr>';
+      }
+    }
+
+    // Abre o modal de visualização
+    async function verCliente(id) {
+      const c = await api('GET', '/clientes/' + id);
+      document.getElementById('vc-codigo').textContent    = c.codigo;
+      document.getElementById('vc-nome').textContent      = c.nome;
+      document.getElementById('vc-fantasia').textContent  = c.fantasia || '—';
+      document.getElementById('vc-documento').textContent = c.documento;
+      document.getElementById('vc-endereco').textContent  = c.endereco || '—';
+      document.getElementById('modal-ver').classList.add('aberto');
+    }
+
+    function fecharModal() {
+      document.getElementById('modal-ver').classList.remove('aberto');
+    }
+
+    // Exclui um cliente
+    async function excluirCliente(id) {
+      if (!confirm('Deseja excluir este cliente?')) return;
+      await api('DELETE', '/clientes/' + id);
+      toast('Cliente excluído!');
+      carregarClientes();
+    }
+
+    // Fechar modal clicando fora
+    document.getElementById('modal-ver').addEventListener('click', function(e) {
+      if (e.target === this) fecharModal();
+    });
+
+    carregarClientes();
+  </script>
+
+</body>
+</html>

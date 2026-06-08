@@ -1,0 +1,405 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background: #f5f5f5;
+  color: #111;
+}
+
+/* HEADER */
+header {
+  background: #fff;
+  border-bottom: 2px solid #CC1B1B;
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+header h1 {
+  font-size: 20px;
+  color: #CC1B1B;
+}
+
+header nav {
+  display: flex;
+  gap: 8px;
+}
+
+/* CONTEÚDO PRINCIPAL */
+main {
+  padding: 28px 24px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+/* TÍTULOS DE PÁGINA */
+.pagina-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.pagina-topo h2 {
+  font-size: 20px;
+}
+
+/* BOTÕES */
+.btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn:hover {
+  opacity: 0.85;
+}
+
+.btn-vermelho {
+  background: #CC1B1B;
+  color: #fff;
+}
+
+.btn-outline {
+  background: #fff;
+  color: #CC1B1B;
+  border: 1.5px solid #CC1B1B;
+}
+
+.btn-cinza {
+  background: #fff;
+  color: #555;
+  border: 1.5px solid #ccc;
+}
+
+.btn-full {
+  width: 100%;
+  text-align: center;
+}
+
+/* FORMULÁRIOS */
+.form-box {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 28px;
+  max-width: 600px;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+label {
+  display: block;
+  font-size: 13px;
+  font-weight: bold;
+  color: #444;
+  margin-bottom: 5px;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="password"] {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+input:focus {
+  border-color: #CC1B1B;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.full {
+  grid-column: 1 / -1;
+}
+
+.form-acoes {
+  display: flex;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+/* TABELA */
+.tabela-wrap {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead {
+  background: #f0f0f0;
+}
+
+th {
+  padding: 12px 14px;
+  text-align: left;
+  font-size: 12px;
+  color: #666;
+  text-transform: uppercase;
+  border-bottom: 1px solid #ddd;
+}
+
+td {
+  padding: 12px 14px;
+  font-size: 14px;
+  border-bottom: 1px solid #eee;
+  vertical-align: middle;
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+tr:hover td {
+  background: #fafafa;
+}
+
+.acoes {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
+.btn-acao {
+  padding: 6px 12px;
+  font-size: 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  border: 1.5px solid;
+  font-weight: bold;
+  transition: opacity 0.2s;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn-acao:hover {
+  opacity: 0.75;
+}
+
+.btn-ver {
+  color: #1a6fc4;
+  border-color: #1a6fc4;
+  background: #fff;
+}
+
+.btn-editar {
+  color: #CC1B1B;
+  border-color: #CC1B1B;
+  background: #fff;
+}
+
+.btn-excluir {
+  color: #fff;
+  border-color: #CC1B1B;
+  background: #CC1B1B;
+}
+
+/* MODAL DE VISUALIZAÇÃO */
+.modal-fundo {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-fundo.aberto {
+  display: flex;
+}
+
+.modal {
+  background: #fff;
+  border-radius: 8px;
+  width: 500px;
+  max-width: 95%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header h2 {
+  font-size: 18px;
+}
+
+.modal-fechar {
+  background: none;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  color: #888;
+  line-height: 1;
+}
+
+.modal-body {
+  padding: 24px;
+}
+
+.modal-footer {
+  padding: 16px 24px;
+  border-top: 1px solid #eee;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.campo-view {
+  margin-bottom: 14px;
+}
+
+.campo-view span {
+  display: block;
+  font-size: 12px;
+  color: #888;
+  margin-bottom: 2px;
+}
+
+.campo-view p {
+  font-size: 15px;
+  color: #111;
+}
+
+.view-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 20px;
+}
+
+/* VAZIO */
+.vazio {
+  padding: 48px;
+  text-align: center;
+  color: #aaa;
+  font-size: 15px;
+}
+
+/* MENSAGEM RÁPIDA CANTO DA TELA */
+#toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: #111;
+  color: #fff;
+  padding: 14px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  display: none;
+  z-index: 9999;
+}
+
+#toast.verde   { border-left: 4px solid #22c55e; }
+#toast.vermelho { border-left: 4px solid #CC1B1B; }
+
+/* DASHBOARD */
+.dash-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.dash-card {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 24px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+  text-decoration: none;
+  display: block;
+  color: #111;
+}
+
+.dash-card:hover {
+  border-color: #CC1B1B;
+}
+
+.dash-card h2 {
+  font-size: 16px;
+  color: #777;
+  margin-bottom: 8px;
+}
+
+.dash-card p {
+  font-size: 32px;
+  font-weight: bold;
+  color: #111;
+}
+
+/* LOGIN */
+body.login-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: #111;
+}
+
+.login-box {
+  background: #fff;
+  padding: 40px;
+  border-radius: 8px;
+  width: 360px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.login-box h1 {
+  font-size: 24px;
+  margin-bottom: 6px;
+  color: #CC1B1B;
+}
+
+.login-box p {
+  font-size: 14px;
+  color: #777;
+  margin-bottom: 24px;
+}
+
+.erro {
+  color: #CC1B1B;
+  font-size: 13px;
+  margin-top: 8px;
+  display: none;
+}
+
+.erro.visivel {
+  display: block;
+}
